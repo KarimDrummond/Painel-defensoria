@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Defensoria - Royal Edition</title>
+    <style>
+        :root {
+            --primary: #1a2a6c;
+            --accent: #27ae60;
+            --gray-text: #7f8c8d;
+            --card-radius: 25px;
+            --btn-radius: 50px;
+        }
+
+        /* Fundo Animado - Azul Royal, Roxo e Verde Escuro */
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            background: linear-gradient(-45deg, #002366, #2e004f, #004d40, #141e30);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .blob {
+            position: fixed;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 50%;
+            z-index: -1;
+            animation: float 20s infinite alternate;
+        }
+
+        @keyframes float {
+            from { transform: translate(0, 0) rotate(0deg); }
+            to { transform: translate(100px, 100px) rotate(360deg); }
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.2);
+            z-index: -1;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            color: white;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        /* Estilo do Campo de Nome */
+        .name-config {
+            margin-bottom: 35px;
+            z-index: 1;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        #userName {
+            width: 100%;
+            padding: 12px 20px;
+            border-radius: var(--btn-radius);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: white;
+            font-weight: 600;
+            outline: none;
+            text-align: center;
+            box-sizing: border-box;
+            transition: all 0.3s;
+        }
+
+        #userName::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        #userName:focus {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: var(--accent);
+            box-shadow: 0 0 15px rgba(39, 174, 96, 0.3);
+        }
+
+        /* Flexbox para centralização dinâmica */
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            max-width: 1050px;
+            width: 100%;
+            z-index: 1;
+        }
+
+        /* Card com Glassmorphism */
+        .card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-radius: var(--card-radius);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            width: 320px;
+            box-sizing: border-box;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            background: rgba(255, 255, 255, 1);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .text-content {
+            color: #5d6d7e;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            text-align: center;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+        }
+
+        .copy-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: var(--btn-radius);
+            cursor: pointer;
+            font-weight: 700;
+            width: 100%;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(39, 174, 96, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.02);
+            background-color: #219150;
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.5);
+        }
+
+        .split-btn-group { display: flex; gap: 8px; }
+        .split-btn { flex: 1; font-size: 0.7rem; }
+
+        .copied { 
+            background: #3498db !important; 
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4) !important;
+        }
+
+        @media (max-width: 600px) { 
+            .card { width: 100%; } 
+            body { padding: 20px 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay"></div>
+    <div class="blob" style="width: 350px; height: 350px; top: -100px; left: -100px;"></div>
+    <div class="blob" style="width: 250px; height: 250px; bottom: 0; right: -50px; animation-duration: 18s;"></div>
+
+    <h1>Painel de Respostas</h1>
+
+    <div class="name-config">
+        <input type="text" id="userName" placeholder="Seu nome para a saudação..." oninput="saveName()">
+    </div>
+
+    <div class="grid-container">
+        <div class="card">
+            <div class="card-title">Saudação</div>
+            <div class="text-content" id="t1">Bom dia! Seja bem-vindo ao atendimento da Defensoria Pública...</div>
+            <button class="copy-btn" onclick="copy('t1', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Parentesco</div>
+            <div class="text-content" id="t2">Qual seu grau de parentesco com o apenado?</div>
+            <button class="copy-btn" onclick="copy('t2', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Permanência</div>
+            <div class="text-content" id="t3">ATENÇÃO! Precisamos que permaneça no atendimento até o encerramento...</div>
+            <button class="copy-btn" onclick="copy('t3', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Documentos</div>
+            <div class="text-content">Versão completa ou reduzida sem o item 3.</div>
+            <div class="split-btn-group">
+                <button class="copy-btn split-btn" onclick="copyDoc(true, this)">COMPLETO</button>
+                <button class="copy-btn split-btn" onclick="copyDoc(false, this)">SEM ITEM 3</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Ausência</div>
+            <div class="text-content" id="t5">Em razão da ausência de resposta, seu atendimento será encerrado hoje...</div>
+            <button class="copy-btn" onclick="copy('t5', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Expediente</div>
+            <div class="text-content" id="t6">Olá, devido ao fim do expediente, infelizmente não conseguiremos realizar seu atendimento...</div>
+            <button class="copy-btn" onclick="copy('t6', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Agendamento</div>
+            <div class="text-content" id="t7">Verificamos que o retorno para o seu atendimento está agendado...</div>
+            <button class="copy-btn" onclick="copy('t7', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Remição</div>
+            <div class="text-content" id="t8">As atividades são juntadas aos autos continuamente pela SEAP...</div>
+            <button class="copy-btn" onclick="copy('t8', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Envio</div>
+            <div class="text-content" id="t9">Nosso expediente encerra às 14h, caso não consiga enviar agora...</div>
+            <button class="copy-btn" onclick="copy('t9', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Ajuda</div>
+            <div class="text-content" id="t10">Posso lhe ajudar em algo mais?</div>
+            <button class="copy-btn" onclick="copy('t10', this)">COPIAR</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Finalização</div>
+            <div class="text-content">A Defensoria Pública do Estado do Amazonas agradece seu contato...</div>
+            <div class="split-btn-group">
+                <button class="copy-btn split-btn" onclick="copyFinal(true, this)">MANHÃ</button>
+                <button class="copy-btn split-btn" onclick="copyFinal(false, this)">TARDE</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Banco de textos centralizado
+        const texts = {
+            t1: "Bom dia! Seja bem-vindo ao atendimento da Defensoria Pública do Estado de Execução Penal. Me chamo xxxxx e serei responsável pelo seu atendimento. Para agilizar seu atendimento preciso que informe as seguintes informações:\n\n1) nome do apenado\n2) CPF do apenado\n3) nome da mãe do apenado\n4) n° do processo se souber",
+            t2: "Qual seu grau de parentesco com o apenado?",
+            t3: "ATENÇÃO! Precisamos que permaneça no atendimento até o encerramento, pois caso não haja interação em até 10 minutos, seu atendimento será finalizado.",
+            t5: "Em razão da ausência de resposta, seu atendimento será encerrado hoje. Mas não se preocupe, você pode enviar nova mensagem de segunda a sexta, das 08h00 às 13h30, de preferência pelo horário da manhã, pois temos mais atendentes. Agradecemos seu contato!",
+            t6: "Olá, devido ao fim do expediente, infelizmente não conseguiremos realizar seu atendimento no dia de hoje. Por gentileza, entre em contato novamente no próximo dia útil, de 08h às 14h. Obrigado!",
+            t7: "Verificamos em nossos registros que o retorno para o seu atendimento está agendado para o dia XX/XX/XXXX. Caso não tenha outra situação, peço que entre em contato apenas na data agendada para que possamos lhe passar mais informações sobre o pedido.",
+            t8: "As atividades são juntadas aos autos continuamente pela SEAP e periodicamente são feitos os pedidos de remição, principalmente quando verifica-se que irá influenciar um direito imediato ou iminente da progressão de regime.",
+            t9: "Nosso expediente encerra às 14h, caso não consiga enviar a documentação até esse horário, poderá entrar em contato no dia seguinte, de preferência pelo horário da manhã, pois temos mais atendentes à disposição.",
+            t10: "Posso lhe ajudar em algo mais?"
+        };
+
+        function copy(id, btn) {
+            let textToCopy = texts[id];
+            const nameInput = document.getElementById('userName').value.trim();
+
+            // Se for o card de saudação (t1), substitui o xxxxx pelo nome digitado
+            if (id === 't1') {
+                textToCopy = textToCopy.replace("xxxxx", nameInput || "xxxxx");
+            }
+
+            navigator.clipboard.writeText(textToCopy);
+            feedback(btn);
+        }
+
+        function copyDoc(full, btn) {
+            let text = "Precisamos confirmar sua identidade. Para isso, envie, por gentileza: \n\n1) foto frente e verso do seu documento de identificação com foto\n2) foto segurando o documento ao lado do rosto";
+            if(full) text += "\n3) certidão de casamento ou declaração de união estável";
+            navigator.clipboard.writeText(text);
+            feedback(btn);
+        }
+
+        function copyFinal(isMorning, btn) {
+            const saudacao = isMorning ? "bom dia." : "boa tarde.";
+            const text = "A Defensoria Pública do Estado do Amazonas agradece seu contato, tenha uma " + saudacao;
+            navigator.clipboard.writeText(text);
+            feedback(btn);
+        }
+
+        function feedback(btn) {
+            const original = btn.innerText;
+            btn.innerText = "COPIADO!";
+            btn.classList.add('copied');
+            setTimeout(() => {
+                btn.innerText = original;
+                btn.classList.remove('copied');
+            }, 1000);
+        }
+
+        // Salva o nome automaticamente para não precisar digitar sempre
+        function saveName() {
+            localStorage.setItem('atendenteNome', document.getElementById('userName').value);
+        }
+
+        // Carrega o nome salvo ao abrir a página
+        window.onload = function() {
+            const savedName = localStorage.getItem('atendenteNome');
+            if (savedName) {
+                document.getElementById('userName').value = savedName;
+            }
+        };
+    </script>
+</body>
+</html>
