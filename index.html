@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel Defensoria - Royal Edition</title>
+    <title>Respostas da Execução Penal - Royal Edition</title>
     <style>
         :root {
             --primary: #1a2a6c;
@@ -17,6 +17,8 @@
             --color-clear: #c0392b;
             --color-batch: #e74c3c;
             --color-add: #3498db;
+            /* Verde extraído do logotipo */
+            --header-green: #1ba054;
         }
 
         /* Fundo Animado e Estilos Base */
@@ -61,11 +63,28 @@
             z-index: -1;
         }
 
+        /* Cabeçalho com Imagem e Título Verde */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Imagem com tamanho aumentado em 15% (55px) */
+        .header-logo {
+            width: 55px;
+            height: 55px;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));
+        }
+
         h1 {
             font-size: 1.8rem;
-            color: white;
-            text-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            margin-bottom: 20px;
+            color: var(--header-green);
+            text-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            margin: 0;
             font-weight: 800;
         }
 
@@ -266,7 +285,6 @@
             50% { background-color: white; color: var(--color-batch); }
         }
         
-        /* Força a cor do SVG a acompanhar a inversão de cor da classe blinking-active */
         .fab-sub.blinking-active svg { fill: currentColor; }
 
         /* Abertura */
@@ -359,6 +377,7 @@
         .modal-btn { padding: 20px; border-radius: var(--btn-radius); border: 1px solid rgba(0,0,0,0.05); background: white; color: var(--primary); cursor: pointer; font-weight: 700; font-size: 1rem; transition: 0.2s; }
         .modal-btn:hover { background: var(--primary); color: white; }
 
+        /* Rodapé de Ações Centralizado */
         .modal-actions {
             display: flex;
             gap: 20px;
@@ -387,7 +406,11 @@
     <div class="blob" style="width: 350px; height: 350px; top: -100px; left: -100px;"></div>
     <div class="blob" style="width: 250px; height: 250px; bottom: 0; right: -50px;"></div>
 
-    <h1>Painel de Respostas</h1>
+    <div class="header-container">
+        <!-- Tag apontando para o arquivo salvo no repositório -->
+        <img src="logo.png" alt="Logotipo Execução Penal" class="header-logo">
+        <h1>Respostas da Execução Penal</h1>
+    </div>
 
     <div class="name-config">
         <input type="text" id="userName" placeholder="Seu nome para a saudação..." oninput="saveName()">
@@ -428,6 +451,7 @@
         <button class="toast-action-btn confirm-delete-btn" onclick="confirmBatchDeleteImmediate()">Confirmar</button>
     </div>
 
+    <!-- Modal de Configurações Dinâmicas -->
     <div class="modal-overlay" id="modalOverlay" onclick="btnModalCancel()">
         <div class="modal" onclick="event.stopPropagation()">
             <div class="modal-header-text" id="modalHeader">Adicionar Card</div>
@@ -445,6 +469,7 @@
                 </div>
             </div>
 
+            <!-- Rodapé de Ações Centralizado -->
             <div class="modal-actions">
                 <button class="modal-btn btn-cancel" onclick="btnModalCancel()">Cancelar</button>
                 <button class="modal-btn btn-confirm" onclick="btnModalConfirm()">Confirmar</button>
@@ -510,9 +535,9 @@
             if (!selectionMode) {
                 selectionMode = true;
                 fab.classList.add('selection-active');
-                btnDelete.classList.add('blinking-active'); // Ativa a piscagem
+                btnDelete.classList.add('blinking-active');
             } else {
-                btnDelete.classList.remove('blinking-active'); // Desativa a piscagem
+                btnDelete.classList.remove('blinking-active');
                 if (selectedIds.size > 0) {
                     startBatchDeleteCountdown();
                 } else {
@@ -544,8 +569,6 @@
             clearTimeout(deleteTimeout);
             clearInterval(deleteProgressInterval);
             document.getElementById('deleteToast').classList.remove('active');
-            
-            // CORREÇÃO: Limpa as seleções e reseta os cards removendo as bordas vermelhas
             selectedIds.clear();
             selectionMode = false;
             document.getElementById('fabMenu').classList.remove('selection-active');
@@ -642,7 +665,6 @@
             else { cardsData.find(c => c.id === currentEditingId).content = val; renderCards(); }
         }
 
-        /* Os resets e limpezas gerais também removem qualquer estado de piscagem residual */
         function resetPainel() {
             if(confirm("Deseja resetar todos os cards?")) {
                 cardsData = JSON.parse(JSON.stringify(defaultCards));
@@ -692,6 +714,8 @@
             btn.classList.add('copied');
             setTimeout(() => { btn.innerText = original; btn.classList.remove('copied'); }, 1000);
         }
+
+        function saveName() { localStorage.setItem('atendenteNome', document.getElementById('userName').value); }
 
         window.onload = function() {
             const savedName = localStorage.getItem('atendenteNome');
